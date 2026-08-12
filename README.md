@@ -25,7 +25,7 @@ The primary goal of this project is to practice the complete SOC investigation w
               ┌──────────────────┐             ┌──────────────────┐
               │    TARGET-PC     │             │      ADDC        │
               │    Windows 10    │             │ Windows Server   │
-              │                  │             │ Active Directory │
+              │     Sysmon       │             │ Active Directory │
               │ 192.168.10.132   │             │ 192.168.10.130   │
               └────────┬─────────┘             └────────┬─────────┘
                        │                                │
