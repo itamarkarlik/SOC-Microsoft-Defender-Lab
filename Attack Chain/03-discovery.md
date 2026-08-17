@@ -2,7 +2,7 @@
 
 ## System & Domain Discovery
 
-After the reconnaissance phase, discovery activity was performed from the Windows endpoint to identify system information, user accounts, domain resources, and network shares.
+After gaining RDP access to the Windows endpoint using the compromised domain account `MYLAB\Jsmith`, discovery activity was performed from the victim machine under the `Jsmith` user context.
 
 ### 1. System & Identity Discovery
 
@@ -16,7 +16,7 @@ whoami /groups
 ipconfig /all
 ```
 
-These commands identified the hostname, operating system, current user, group membership, and network configuration.
+This provided information about the hostname, operating system, current user, group membership, and network configuration.
 
 ![System Identity Discovery](../images/discovery/attacker-system-identity-discovery.png)
 
@@ -61,13 +61,12 @@ The results identified the `NETLOGON` and `SYSVOL` shares.
 
 ### 5. Defender for Endpoint
 
-Microsoft Defender for Endpoint recorded the discovery activity, including execution of `systeminfo.exe`, `ipconfig.exe`, `ARP.EXE`, `net.exe`, and `nltest.exe`.
+Microsoft Defender for Endpoint recorded the discovery activity performed by `MYLAB\Jsmith`, including execution of `systeminfo.exe`, `ipconfig.exe`, `ARP.EXE`, `net.exe`, and `nltest.exe`.
 
-The activity was associated with:
+The activity was associated with techniques including:
 
 * **T1016 — System Network Configuration Discovery**
 * **T1082 — System Information Discovery**
-* **T1087 — Account Discovery**
 
 ![Defender Discovery Events](../images/discovery/edr-discovery-events.png)
 
@@ -75,13 +74,13 @@ The activity was associated with:
 
 Microsoft Sentinel was used to investigate the process execution events generated during the discovery activity.
 
-The investigation correlated `cmd.exe` with the executed discovery commands and confirmed the associated account and command lines.
+The results confirmed that the discovery commands were executed by `MYLAB\Jsmith` through `cmd.exe`, following the successful RDP compromise.
 
 ![Sentinel Discovery Events](../images/discovery/sentinel-discovery-events.png)
 
 ### 7. Result
 
-The discovery phase successfully identified:
+The Discovery phase successfully identified:
 
 * Hostname and operating system information
 * Current user and group membership
@@ -90,4 +89,4 @@ The discovery phase successfully identified:
 * Domain Controller information
 * Available network shares
 
-The activity was successfully observed through both **Microsoft Defender for Endpoint** and **Microsoft Sentinel**, providing endpoint and SIEM visibility into the discovery stage of the attack chain.
+The activity was observed through **Microsoft Defender for Endpoint and Microsoft Sentinel**, demonstrating the transition from initial RDP access to post-compromise discovery under the compromised `Jsmith` account.
