@@ -73,7 +73,7 @@ Output:
 target-PC
 ```
 
-![Reverse Shell Connection](../../images/persistance/attacker-persistance-nc.png)
+![Reverse Shell Connection](../images/persistance/attacker-persistance-nc.png)
 
 ### PowerShell Script Creation
 
@@ -94,7 +94,7 @@ FolderPath: C:\ProgramData\update.ps1
 InitiatingProcessFileName: powershell.exe
 ```
 
-![PowerShell File Creation](../../images/persistence/edr-sch-file-creation-cmd.png)
+![PowerShell File Creation](../images/persistance/edr-sch-file-creation-cmd.png)
 
 ### Scheduled Task Creation
 
@@ -122,7 +122,7 @@ schtasks.exe
 
 and recorded the creation of the `UpdateTask` scheduled task.
 
-![Scheduled Task Creation Command](../../images/persistence/edr-sch-task-creation-cmd.png)
+![Scheduled Task Creation Command](../images/persistance/edr-sch-task-creation-cmd.png)
 
 ### Scheduled Task Verification
 
@@ -146,7 +146,7 @@ Schedule Type:         At logon time
 
 This confirmed that `UpdateTask` was enabled and configured to execute at user logon under the `SYSTEM` account.
 
-![Scheduled Task Verification](../../images/persistence/attacker-sch-task.png)
+![Scheduled Task Verification](../images/persistance/attacker-sch-task.png)
 
 ### Task Execution and Verification
 
@@ -158,7 +158,7 @@ schtasks /run /tn "UpdateTask"
 
 Microsoft Defender telemetry recorded the execution of `schtasks.exe` and the creation of the scheduled task.
 
-![Scheduled Task Execution](../../images/persistence/edr-sch-task-creation.png)
+![Scheduled Task Execution](../images/persistance/edr-sch-task-creation.png)
 
 The resulting outbound connection was received by the Kali listener on port `4444`.
 
@@ -209,7 +209,7 @@ powershell.exe
 schtasks.exe
 ```
 
-![Microsoft Defender Scheduled Task Detection](../../images/persistence/sentinel-sch-task-creation.png)
+![Microsoft Defender Scheduled Task Detection](../images/persistance/sentinel-sch-task-creation.png)
 
 ### KQL Investigation — Scheduled Task Creation
 
@@ -239,7 +239,7 @@ Command:  powershell.exe
 Arguments: -WindowStyle Hidden -NoP -NonI -Exec Bypass -File C:\ProgramData\update.ps1
 ```
 
-![Security Event 4698 Investigation](../../images/persistence/sentinel-sch-task-creation.png)
+![Security Event 4698 Investigation](../images/persistance/sentinel-sch-task-creation.png)
 
 ### Process Investigation
 
@@ -267,7 +267,7 @@ and:
 schtasks.exe /run /tn UpdateTask
 ```
 
-![EDR Scheduled Task Process Activity](../../images/persistence/edr-sch-task-creation-cmd.png)
+![EDR Scheduled Task Process Activity](../images/persistance/edr-sch-task-creation-cmd.png)
 
 ### Network Connection Investigation
 
@@ -298,7 +298,7 @@ Remote Port:
 
 This correlated the PowerShell execution with the Kali Netcat listener.
 
-![EDR Network Connection](../../images/persistence/edr-network-connecition.png)
+![EDR Network Connection](../images/persistance/edr-network-connecition.png)
 
 ## Windows Event Telemetry
 
@@ -345,31 +345,31 @@ NT AUTHORITY\SYSTEM
 
 ### Attacker — Reverse Shell
 
-![Attacker Reverse Shell](../../images/persistence/attacker-persistance-nc.png)
+![Attacker Reverse Shell](../images/persistance/attacker-persistance-nc.png)
 
 ### Attacker — Scheduled Task
 
-![Attacker Scheduled Task](../../images/persistence/attacker-sch-task.png)
+![Attacker Scheduled Task](../images/persistance/attacker-sch-task.png)
 
 ### EDR — File Creation
 
-![EDR File Creation](../../images/persistence/edr-sch-file-creation-cmd.png)
+![EDR File Creation](../images/persistance/edr-sch-file-creation-cmd.png)
 
 ### EDR — Scheduled Task Creation
 
-![EDR Scheduled Task Creation](../../images/persistence/edr-sch-task-creation.png)
+![EDR Scheduled Task Creation](../images/persistance/edr-sch-task-creation.png)
 
 ### EDR — Scheduled Task Command
 
-![EDR Scheduled Task Command](../../images/persistence/edr-sch-task-creation-cmd.png)
+![EDR Scheduled Task Command](../images/persistance/edr-sch-task-creation-cmd.png)
 
 ### EDR — Network Connection
 
-![EDR Network Connection](../../images/persistence/edr-network-connecition.png)
+![EDR Network Connection](../images/persistance/edr-network-connecition.png)
 
 ### Microsoft Defender — Scheduled Task Detection
 
-![Microsoft Defender Scheduled Task Detection](../../images/persistence/sentinel-sch-task-creation.png)
+![Microsoft Defender Scheduled Task Detection](../images/persistance/sentinel-sch-task-creation.png)
 
 ## Result
 
