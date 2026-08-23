@@ -73,7 +73,7 @@ Output:
 target-PC
 ```
 
-![Reverse Shell Connection](../../images/persistence/attacker-persistance-nc.png)
+![Reverse Shell Connection](../../images/persistance/attacker-persistance-nc.png)
 
 ### PowerShell Script Creation
 
