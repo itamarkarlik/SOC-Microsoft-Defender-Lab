@@ -1,5 +1,5 @@
-````markdown
 # 📄 Detection Rule 1: Nmap Port Scanning Activity Detected
+
 
 ## 📌 Overview
 
@@ -104,5 +104,5 @@ The rule is designed to identify reconnaissance activity where an external or in
 
 > **Lab Scope:** This analytic rule was developed and tested within an isolated SOC home lab environment for defensive security research and SOC Tier 1 training.
 
-```
-```
+
+
