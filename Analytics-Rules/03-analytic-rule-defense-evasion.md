@@ -69,5 +69,4 @@ Clearing Windows event logs can remove forensic evidence and hinder SOC investig
 
 > **Lab Scope:** Developed and tested in an isolated SOC home lab for defensive security research and SOC Tier 1 training.
 
-```
-```
+
