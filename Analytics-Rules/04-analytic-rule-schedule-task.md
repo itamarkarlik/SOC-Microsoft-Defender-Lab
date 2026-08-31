@@ -72,5 +72,3 @@ Attackers can create scheduled tasks to maintain persistence or execute commands
 
 > **Lab Scope:** Developed and tested in an isolated SOC home lab for defensive security research and SOC Tier 1 training.
 
-```
-```
