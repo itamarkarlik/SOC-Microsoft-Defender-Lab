@@ -177,7 +177,7 @@ These entities are then passed through the automated response workflow.
 
 The successful execution of the playbook can be seen below. The workflow completed successfully and processed the incident through the configured decision and response stages.
 
-![SOAR Playbook Successful Run](images/soar-playbook-rdp-brute-force/ssoar-playbook-succeeded.png)
+![SOAR Playbook Successful Run](images/soar-playbook-rdp-brute-force/soar-playbook-succeeded.png)
 
 ### Playbook Flow
 
