@@ -8,6 +8,9 @@ The SOAR workflow was built as the automated response layer following **Detectio
 
 The project demonstrates how detection logic written in **KQL** can feed a Sentinel Incident with relevant entities such as the attacker IP, target host, and compromised account, which are then consumed by the SOAR playbook for automated response.
 
+![SOAR Playbook Architecture](images/soar-playbook-rdp-brute-force/soar-playbook-architecture.png)
+
+
 ### Attack → Detection → Response
 
 ```text
