@@ -159,7 +159,7 @@ Successful Brute Force: true
 
 The successful authentication confirmed that the brute-force activity potentially resulted in account compromise.
 
-![Sentinel RDP Brute Force Incident](images/analytic-rules/05-analytic-rule-brute-force-incident.png)
+![Sentinel RDP Brute Force Incident](images/soar-playbook-rdp-brute-force/soar-incident.png)
 
 ---
 
