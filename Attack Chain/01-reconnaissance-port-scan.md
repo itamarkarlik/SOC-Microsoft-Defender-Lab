@@ -42,8 +42,6 @@ The same investigation was performed against the Domain Controller.
 ### MITRE ATT&CK
 
 * **T1046 — Network Service Discovery**
-* **T1043 — Commonly Used Port**
-* **T1095 — Non-Application Layer Protocol**
 
 ### Result
 
