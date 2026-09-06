@@ -10,9 +10,7 @@ The activity was executed directly on the Domain Controller under the remote con
 MYLAB\Jsmith
 ```
 
----
-
-## 1. Domain User Creation & Privilege Escalation
+### Domain User Creation & Privilege Escalation
 
 A new domain user account was created and added to the `Domain Admins` group:
 
@@ -33,23 +31,13 @@ The output confirmed that `EvilAdmin` was successfully added to the `Domain Admi
 
 This demonstrated successful creation of a privileged domain account and establishment of domain-level persistence.
 
----
-
-## 2. Microsoft Defender for Endpoint Investigation
+### Microsoft Defender for Endpoint
 
 Microsoft Defender for Endpoint recorded the activity on the Domain Controller.
 
 The telemetry showed `wsmprovhost.exe` invoking `net.exe` to create the `EvilAdmin` domain account and modify group membership.
 
-Relevant events included:
-
-```text
-T1136.002 — Domain Account
-T1098 — Account Manipulation
-T1087 — Account Discovery
-```
-
-Defender also generated detections for suspicious account creation and anomalous account activity.
+Defender also detected suspicious account creation and anomalous account activity.
 
 ![EDR - Domain Compromise](../images/domain-compromise/edr-domain-compromise.png)
 
@@ -57,9 +45,7 @@ The process activity confirmed the relationship between the remote PowerShell se
 
 ![EDR - Domain Compromise Alert](../images/domain-compromise/edr-alert-domain-compromise.png)
 
----
-
-## 3. Microsoft Sentinel Investigation
+### Microsoft Sentinel
 
 Microsoft Sentinel was used to correlate the Windows Security events generated during the account creation and privilege assignment.
 
@@ -76,26 +62,12 @@ The events showed `Jsmith` as the account performing the activity and `EvilAdmin
 
 ![Microsoft Sentinel - Domain Compromise](../images/domain-compromise/sentinel-domain-compromise.png)
 
-The Sentinel query provided additional confirmation that the new account was created and subsequently added to the `Domain Admins` group.
+### MITRE ATT&CK
 
----
+* **T1136.002 — Create Account: Domain Account**
+* **T1098 — Account Manipulation**
 
-## 4. MITRE ATT&CK Mapping
+### Detection Summary
 
-The activity was mapped to the following MITRE ATT&CK techniques:
+The domain compromise activity was successfully detected and validated across **Microsoft Defender for Endpoint and Microsoft Sentinel**. Defender recorded the creation of the `EvilAdmin` domain account and the subsequent group modification, while Sentinel confirmed the activity through **Event ID 4720** and **Event ID 4728**. The investigation demonstrated successful creation of a privileged domain account and establishment of domain-level persistence.
 
-### T1136.002 — Create Account: Domain Account
-
-**Tactic:** Persistence
-
-**Technique:** Create Account — Domain Account
-
-### T1098 — Account Manipulation
-
-**Tactic:** Persistence, Privilege Escalation
-
-**Technique:** Account Manipulation
-
----
-
-> **Lab Scope:** All activity was performed within the isolated SOC home lab environment for defensive security research and SOC Tier 1 training.
