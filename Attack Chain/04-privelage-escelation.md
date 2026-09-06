@@ -2,9 +2,9 @@
 
 ## Unquoted Service Path
 
-After completing the reconnaissance phase and gaining RDP access through the RDP brute-force stage, the attacker obtained access to the victim machine as `MYLAB\Jsmith` and proceeded with local discovery to identify potential privilege escalation opportunities.
+After completing reconnaissance, gaining RDP access through the brute-force attack, and performing initial discovery, the attacker accessed the victim machine as `MYLAB\Jsmith` and began looking for potential privilege escalation opportunities.
 
-## Service Enumeration
+### Service Enumeration
 
 From the compromised `Jsmith` session, Windows services were enumerated to identify potentially misconfigured services.
 
@@ -20,7 +20,7 @@ C:\Program Files\Custom Software\App Service\service.exe
 
 The path contained multiple spaces and was not enclosed in quotation marks.
 
-## Service Configuration Analysis
+### Service Configuration Analysis
 
 The service configuration was examined using:
 
@@ -42,7 +42,7 @@ The corresponding Sentinel telemetry also captured the service discovery activit
 
 ![Sentinel Service Discovery](../images/privelage-escelation/sentinel-privesc-svc-check.png)
 
-## Permission Analysis
+### Permission Analysis
 
 The attacker then inspected the permissions on the application directory:
 
@@ -54,8 +54,7 @@ The output displayed the ACLs assigned to the application directory, including t
 
 ![Service Permissions](../images/privelage-escelation/attacker-privesc-svc-icacls.png)
 
-
-## Payload Transfer
+### Payload Transfer
 
 The attacker downloaded a controlled malicious payload named `App.exe` from the Kali attacker machine to the compromised endpoint.
 
@@ -79,10 +78,9 @@ Remote IP:   192.168.10.133
 Remote Port: 8000
 ```
 
-
 ![EDR Payload Transfer](../images/privelage-escelation/edr-privesc-file-download.png)
 
-## Service Path Hijacking
+### Service Path Hijacking
 
 The payload was then placed at:
 
@@ -101,7 +99,7 @@ This exploited the combination of:
 * Payload placement in the application directory
 * `LocalSystem` service execution
 
-## Triggering the Exploitation
+### Triggering the Exploitation
 
 The `VulnerableApp` service was configured as `AUTO_START` and executed under the `LocalSystem` account.
 
@@ -121,7 +119,7 @@ Parent Process: C:\Windows\System32\services.exe
 
 This provided evidence connecting the payload execution to the Windows service.
 
-## Privilege Escalation Verification
+### Privilege Escalation Verification
 
 After the service execution, the local Administrators group was checked:
 
@@ -139,15 +137,15 @@ had been added to the local `Administrators` group.
 
 ![Privilege Escalation Result](../images/privelage-escelation/attacker-privesc-admin-group-added.png)
 
-## Defender for Endpoint
+### Microsoft Defender for Endpoint
 
 Microsoft Defender for Endpoint was investigated to reconstruct the privilege escalation chain.
 
-The investigation identified the sequence of PowerShell network activity, payload creation on the Desktop, payload placement in the application directory and subsequent execution through the service.
+The investigation identified the sequence of PowerShell network activity, payload creation on the Desktop, payload placement in the application directory, and subsequent execution through the service.
 
 This allowed the endpoint activity to be correlated back to the compromised `Jsmith` account.
 
-## Sentinel Investigation
+### Microsoft Sentinel
 
 Microsoft Sentinel was used to investigate the corresponding Windows Security events.
 
@@ -157,15 +155,15 @@ The primary event of interest was:
 
 The event was used to confirm the modification of the local `Administrators` group.
 
-
 The resulting event showed the modification of the local `Administrators` group on `target-PC.mylab.local`.
 
 ![Sentinel Privilege Escalation](../images/privelage-escelation/sentinel-privesc-admin-group-added.png)
 
-## MITRE ATT&CK
-
-The activity was associated with:
+### MITRE ATT&CK
 
 * **T1574.009 — Hijack Execution Flow: Path Interception by Unquoted Path**
 * **T1098.007 — Account Manipulation: Additional Local or Domain Groups**
 
+### Detection Summary
+
+The privilege escalation activity was successfully detected and validated across **Microsoft Defender for Endpoint and Microsoft Sentinel**. The investigation reconstructed the attack chain from service enumeration and identification of the vulnerable `VulnerableApp` service through payload transfer, payload placement, and execution via the Windows service. Sentinel further confirmed the modification of the local `Administrators` group through **Event ID 4732**, demonstrating that the compromised `MYLAB\Jsmith` account successfully gained local administrative privileges.
