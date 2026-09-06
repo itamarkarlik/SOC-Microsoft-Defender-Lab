@@ -4,7 +4,7 @@
 
 After the reconnaissance phase identified RDP (`3389/tcp`) on `192.168.10.132`, a controlled RDP brute-force attack was performed against the domain user `MYLAB\Jsmith`.
 
-### 1. RDP Discovery & Brute Force
+### RDP Discovery & Brute Force
 
 From Kali, RDP was confirmed as open and Hydra was used to perform the credential attack against the target.
 
@@ -12,21 +12,19 @@ From Kali, RDP was confirmed as open and Hydra was used to perform the credentia
 
 The attack generated multiple authentication attempts against `192.168.10.132`.
 
-### 2. Defender for Endpoint
+### Microsoft Defender for Endpoint
 
 Microsoft Defender recorded the RDP activity and multiple failed authentication attempts from `192.168.10.133`, followed by a successful authentication for `MYLAB\Jsmith`.
 
 ![Defender RDP Brute Force](../images/rdp-brute-force/edr-brute-force-victim.png)
 
-The activity was associated with **T1021.001 — Remote Desktop Protocol**.
-
-### 3. Sentinel Investigation
+### Microsoft Sentinel
 
 Sentinel was used to correlate the authentication events. The results showed multiple **4625 Failed Logon** events followed by a **4624 Successful Logon** from `192.168.10.133`.
 
 ![Sentinel Brute Force](../images/rdp-brute-force/sentinel-brute-force-victim.png)
 
-### 4. Manual RDP Login
+### Manual RDP Login
 
 After obtaining the credentials, a manual RDP connection was performed using `MYLAB\Jsmith`.
 
@@ -36,12 +34,7 @@ Defender identified:
 
 ![Successful RDP Access — Defender](../images/rdp-brute-force/edr-rdp-access-victim.png)
 
-The event was mapped to:
-
-* **T1078 — Valid Accounts**
-* **T1021.001 — Remote Desktop Protocol**
-
-### 5. Sentinel — Successful RDP
+### Microsoft Sentinel — Successful RDP
 
 Sentinel confirmed the successful interactive RDP session with:
 
@@ -52,4 +45,11 @@ Sentinel confirmed the successful interactive RDP session with:
 
 ![Successful RDP Access — Sentinel](../images/rdp-brute-force/sentinel-rdp-access-victim.png)
 
+### MITRE ATT&CK
 
+* **T1078 — Valid Accounts**
+* **T1021.001 — Remote Desktop Protocol**
+
+### Detection Summary
+
+The RDP brute-force activity was successfully detected and validated across **Kali, Microsoft Defender for Endpoint, and Microsoft Sentinel**. Multiple failed authentication attempts from `192.168.10.133` were followed by a successful authentication for `MYLAB\Jsmith`. The successful RDP session was further confirmed through **Event ID 4624 with Logon Type 10**, demonstrating successful remote access using valid credentials.
