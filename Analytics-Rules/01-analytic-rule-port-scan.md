@@ -6,8 +6,6 @@
 - **Rule Name:** Nmap Port Scanning Activity Detected
 - **Severity:** Medium
 - **MITRE ATT&CK:** Reconnaissance → Active Scanning: Port Scanning (`T1595.001`)
-- **Data Source:** Windows `SecurityEvent` / Windows Filtering Platform (WFP)
-- **Target:** `TARGET-PC`
 - **Entities:** Source IP (`SourceAddress`), Destination Host (`Computer`)
 
 ## 📝 Description
@@ -44,11 +42,6 @@ SecurityEvent
 
 ## 🎯 Alert Configuration
 
-### 🔹 Entity Mapping
-
-* **IP Address:** `SourceAddress`
-* **Host:** `Computer`
-
 ### 🔹 Alert Grouping
 
 Alerts are grouped into a single incident when the same source IP and destination host are involved, reducing duplicate alerts and SOC alert fatigue.
@@ -57,23 +50,6 @@ Alerts are grouped into a single incident when the same source IP and destinatio
 
 ![Nmap Port Scanning Analytic Rule Configuration](../images/analytic-rules/01-analytic-rule-config.png)
 
-## 🔎 Detection Logic
-
-```text
-Source IP
-    ↓
-Multiple Connection Attempts
-    ↓
-WFP Events 5156 / 5157 / 5152
-    ↓
-Extract Destination Ports
-    ↓
->25 Unique Ports / 5 Minutes
-    ↓
-Microsoft Sentinel Alert
-    ↓
-SOC Investigation
-```
 
 ## 🚨 Detection Result
 
@@ -86,7 +62,6 @@ The generated Microsoft Sentinel incident contained:
 * **Target Ports:** 1000 unique ports
 * **Detection Time:** August 27, 2026 at 12:40 PM
 * **Severity:** Medium
-* **Detection Source:** Scheduled detection
 * **MITRE ATT&CK Technique:** `T1595`
 
 ### 📸 Sentinel Incident
@@ -99,10 +74,6 @@ The generated Microsoft Sentinel incident contained:
 
 * **Tactic:** Reconnaissance
 * **Technique:** Active Scanning: Port Scanning
-
-The rule is designed to identify reconnaissance activity where an external or internal source probes multiple destination ports on a target system.
-
-> **Lab Scope:** This analytic rule was developed and tested within an isolated SOC home lab environment for defensive security research and SOC Tier 1 training.
 
 
 
