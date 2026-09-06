@@ -1,3 +1,4 @@
+
 # 01 — Reconnaissance
 
 ## Network Service Discovery
@@ -19,13 +20,11 @@ The scans identified exposed Windows and Active Directory services.
 
 ### Microsoft Defender for Endpoint
 
-Microsoft Defender detected a TCP port scan on the victim machine originating from `192.168.10.133`, with **1000 ports scanned**.
+Microsoft Defender detected a TCP port scan on the victim machine and the Domain Controller originating from `192.168.10.133`, with **1000 ports scanned on each host**.
 
 The activity was mapped to **T1046 — Network Service Discovery**.
 
 ![EDR Port Scan - Victim](../images/reconnaissance-port-scan/edr-port-scan-victim.png)
-
-The Domain Controller also generated an **Inbound Vertical Port Scan** detection from `192.168.10.133`.
 
 ![EDR Port Scan - DC](../images/reconnaissance-port-scan/edr-port-scan-dc.png)
 
@@ -43,6 +42,6 @@ The same investigation was performed against the Domain Controller.
 
 * **T1046 — Network Service Discovery**
 
-### Result
+### Detection Summary
 
-The reconnaissance activity was successfully observed across **Nmap, Microsoft Defender for Endpoint, and Microsoft Sentinel**.
+The reconnaissance activity was successfully detected and validated across **Nmap, Microsoft Defender for Endpoint, and Microsoft Sentinel**. Microsoft Defender identified the TCP port scanning activity originating from the attacker machine, while Microsoft Sentinel provided supporting network security events to validate the connections generated during the scan.
