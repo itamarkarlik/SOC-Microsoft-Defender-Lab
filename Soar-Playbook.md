@@ -125,21 +125,6 @@ CompromisedAccounts
 
 These detection results are important to the SOAR workflow because the Sentinel Incident provides the entities that the playbook uses for automated response.
 
-In other words:
-
-```text
-KQL Detection
-     │
-     ├── IpAddress
-     ├── Computer
-     └── CompromisedAccounts
-              │
-              ▼
-     Sentinel Incident
-              │
-              ▼
-        SOAR Playbook
-```
 
 The KQL query itself is maintained as part of **Detection Rule 5**, while this project focuses on how the resulting Sentinel incident is automatically processed by the SOAR workflow.
 
@@ -182,48 +167,6 @@ The successful execution of the playbook can be seen below. The workflow complet
 
 ![SOAR Playbook Successful Run](images/soar-playbook-rdp-brute-force/soar-playbook-succeeded.png)
 
-### Playbook Flow
-
-The implemented workflow performs the following high-level actions:
-
-```text
-Microsoft Sentinel Incident
-          │
-          ▼
-Entities - Get Accounts
-          │
-          ▼
-Entities - Get IPs
-          │
-          ▼
-Entities - Get Hosts
-          │
-          ▼
-Condition
-          │
-          ▼
-Send Approval Email
-          │
-          ▼
-Analyst Decision
-      ┌───┴───┐
-      ▼       ▼
-    True     False
-      │       │
-      ▼       ▼
-  Continue   Add Comment
-      │
-      ▼
-   Create Job
-      │
-      ▼
- Add Comment
-      │
-      ▼
-Update Incident
-```
-
-The playbook uses the entities produced by the detection as the bridge between **SIEM detection** and **automated response**.
 
 ---
 
@@ -328,60 +271,6 @@ This creates a complete investigation trail from the original detection through 
 
 ![Incident Activity Notes](images/soar-playbook-rdp-brute-force/soar-incident-activity-notes.png)
 
----
-
-## 🔄 Complete Attack Chain
-
-The complete lab demonstrates the following SOC workflow:
-
-```text
-1. RDP Service Discovered
-          ↓
-2. RDP Brute Force Attack
-          ↓
-3. 4625 Failed Logons
-          ↓
-4. 4624 Successful Logon
-          ↓
-5. KQL Correlation
-          ↓
-6. Sentinel Analytic Rule 5
-          ↓
-7. Sentinel Incident Created
-          ↓
-8. SOAR Playbook Triggered
-          ↓
-9. IP + Account + Host Extracted
-          ↓
-10. SOC Analyst Approval
-          ↓
-11. Create Remediation Job
-          ↓
-12. Disable Compromised AD Account
-          ↓
-13. Block Attacker IP
-          ↓
-14. Validate Remediation
-          ↓
-15. Update & Resolve Incident
-```
-
----
-
-## 🧩 Technologies Used
-
-| Technology                          | Purpose                                   |
-| ----------------------------------- | ----------------------------------------- |
-| **Kali Linux**                      | RDP brute-force simulation                |
-| **Windows Security Events**         | Authentication telemetry (`4624`, `4625`) |
-| **KQL**                             | Detection and correlation logic           |
-| **Microsoft Defender for Endpoint** | Endpoint telemetry and investigation      |
-| **Microsoft Sentinel**              | SIEM, detection and incident management   |
-| **Azure Automation**                | Automated remediation execution           |
-| **Power Automate / Logic Apps**     | SOAR orchestration and approval           |
-| **PowerShell**                      | Automated containment                     |
-| **Active Directory**                | Account containment                       |
-| **Windows Firewall**                | Attacker IP blocking                      |
 
 ---
 
@@ -394,54 +283,3 @@ The attack and detection chain maps to multiple MITRE ATT&CK techniques:
 * **T1078 — Valid Accounts**
 
 The custom analytic rule focuses on **T1110.001**, while the successful RDP activity provides additional context for the potential compromise.
-
----
-
-## 🎯 SOC Investigation & Response Value
-
-This lab demonstrates more than simply detecting a brute-force attack.
-
-It shows how a SOC can connect multiple stages of the incident lifecycle:
-
-```text
-Detection
-   ↓
-Correlation
-   ↓
-Entity Extraction
-   ↓
-Incident Creation
-   ↓
-Analyst Validation
-   ↓
-Automated Containment
-   ↓
-Remediation Validation
-   ↓
-Incident Documentation
-```
-
-The combination of **KQL-based detection**, **Microsoft Sentinel incident management**, and **SOAR automation** demonstrates how repetitive SOC response tasks can be automated while keeping a human analyst in control of disruptive actions.
-
----
-
-## ✅ Final Result
-
-The lab successfully demonstrated an end-to-end SOC detection and response workflow:
-
-**Attack → Detection → Correlation → Incident → Entity Extraction → Approval → Automated Containment → Validation → Resolution**
-
-The project demonstrates how a SOC can combine **SIEM detection with SOAR automation** to reduce response time while maintaining analyst control over potentially disruptive remediation actions.
-
-> **Lab Scope:** Developed and tested in an isolated SOC home lab environment for defensive security research and SOC Tier 1 training.
-
-````
-
-### מה שיניתי בעיקר
-
-1. **הוספתי את התמונה שלך** מיד אחרי ה־SOAR Playbook, עם:
-   ```markdown
-   ![SOAR Playbook Successful Run](images/soar-playbook-succeeded.png)
-````
-
-6. הוספתי **SOC Investigation & Response Value**, שלדעתי מחזק מאוד את הפרויקט מבחינת Recruiter: זה מראה שאתה לא רק יודע לכתוב Rule אלא מבין את השרשרת **Detection → Triage/Approval → Response → Validation → Documentation**.
