@@ -1,353 +1,223 @@
-# SOC Home Lab — Microsoft Defender XDR, EDR & Sentinel
+# 🛡️ SOC Home Lab — Microsoft Defender for Endpoint, Sentinel & SOAR
 
-A hands-on **SOC / Blue Team Home Lab** designed to simulate a small enterprise environment, generate controlled security attacks, and investigate them using Microsoft's security stack.
+A hands-on **SOC / Blue Team Home Lab** designed to simulate a multi-stage attack against a small enterprise environment and investigate the resulting activity using **Microsoft Defender for Endpoint, Microsoft Sentinel, and SOAR**.
 
-The primary goal of this project is to practice the complete SOC investigation workflow — from **attack simulation and detection to investigation, correlation, MITRE ATT&CK mapping, and response**.
 
 ---
 
 ## 🏗️ Lab Architecture
 
 ```text
-                         ┌──────────────────────────────────┐
-                         │       MICROSOFT SECURITY           │
-                         │                                  │
-                         │  Microsoft Defender XDR           │
-                         │  Microsoft Defender for Endpoint  │
-                         │  Microsoft Sentinel               │
-                         └───────────────┬──────────────────┘
-                                         │
-                         Monitoring / Detection
-                                         │
-                         ┌───────────────┴───────────────┐
-                         │                               │
-                         ▼                               ▼
-              ┌──────────────────┐             ┌──────────────────┐
-              │    TARGET-PC     │             │      ADDC        │
-              │    Windows 10    │             │ Windows Server   │
-              │     Sysmon       │             │ Active Directory │
-              │ 192.168.10.132   │             │ 192.168.10.130   │
-              └────────┬─────────┘             └────────┬─────────┘
-                       │                                │
-                       │         Domain / Network       │
-                       └───────────────┬────────────────┘
-                                       │
-                                       │
-                              ┌────────▼────────┐
-                              │   KALI LINUX    │
-                              │     ATTACKER     │
-                              │                  │
-                              │ 192.168.10.133   │
-                              └──────────────────┘
-```
+                         ┌──────────────────────────────┐
+                         │      MICROSOFT SECURITY       │
+                         │                              │
+                         │  Defender for Endpoint (EDR) │
+                         │  Microsoft Sentinel (SIEM)   │
+                         │  SOAR / Azure Logic Apps      │
+                         └──────────────┬───────────────┘
+                                        │
+                              Detection / Investigation
+                                        │
+              ┌─────────────────────────┴────────────────────┐
+              │                                              │
+              ▼                                              ▼
+    ┌──────────────────┐                           ┌──────────────────┐
+    │    TARGET-PC     │                           │      ADDC        │
+    │    Windows 10    │                           │ Windows Server   │
+    │ 192.168.10.132   │                           │ Active Directory │
+    │                  │                           │ 192.168.10.130   │
+    └─────────┬────────┘                           └─────────┬────────┘
+              │                                              │
+              └──────────────────┬───────────────────────────┘
+                                 │
+                        ┌────────▼────────┐
+                        │   KALI LINUX    │
+                        │     Attacker     │
+                        │ 192.168.10.133   │
+                        └─────────────────┘
+````
 
 ---
 
 ## 🖥️ Lab Environment
 
-| Host / Service                  | Role              | IP Address       | Platform       |
-| ------------------------------- | ----------------- | ---------------- | -------------- |
-| `KALI`                          | Attacker Machine  | `192.168.10.133` | Kali Linux     |
-| `TARGET-PC`                     | Victim / Endpoint | `192.168.10.132` | Windows 10     |
-| `ADDC`                          | Domain Controller | `192.168.10.130` | Windows Server |
-| Microsoft Defender for Endpoint | EDR               | Cloud            | Microsoft      |
-| Microsoft Defender XDR          | XDR Platform      | Cloud            | Microsoft      |
-| Microsoft Sentinel              | SIEM              | Cloud            | Microsoft      |
+| Host / Service                  | Role               | IP               | Platform       |
+| ------------------------------- | ------------------ | ---------------- | -------------- |
+| `KALI`                          | Attacker           | `192.168.10.133` | Kali Linux     |
+| `TARGET-PC`                     | Endpoint           | `192.168.10.132` | Windows 10     |
+| `ADDC`                          | Domain Controller  | `192.168.10.130` | Windows Server |
+| Microsoft Defender for Endpoint | EDR                | Cloud            | Microsoft      |
+| Microsoft Sentinel              | SIEM               | Cloud            | Microsoft      |
+| SOAR / Azure Logic Apps         | Automated Response | Cloud            | Microsoft      |
 
 ---
+
+# ⚔️ Attack Chain
+
+The lab simulates a multi-stage attack progressing from reconnaissance to data staging and exfiltration.
+
+```text
+01 — Reconnaissance / Port Scanning
+                ↓
+02 — RDP Brute Force
+                ↓
+03 — Discovery
+                ↓
+04 — Privilege Escalation
+                ↓
+05 — Persistence / Scheduled Task
+                ↓
+06 — Lateral Movement
+                ↓
+07 — Domain Compromise
+                ↓
+08 — Defense Evasion
+                ↓
+09 — Data Staging & Exfiltration
+```
+
+
+---
+
+# 🔎 Custom Microsoft Sentinel Analytic Rules
+
+Five custom detection rules were developed to detect key stages of the attack chain.
+
+| #  | Detection Rule                                     | Severity | MITRE ATT&CK     |
+| -- | -------------------------------------------------- | -------- | ---------------- |
+| 01 | Nmap Port Scanning Activity Detected               | Medium   | `T1595.001`      |
+| 02 | Suspicious Discovery Commands Executed             | Medium   | `T1082`, `T1087` |
+| 03 | Windows Security Event Log Cleared                 | High     | `T1070.001`      |
+| 04 | Scheduled Task Created                             | Medium   | `T1053.005`      |
+| 05 | Suspicious RDP Brute Force with Success Validation | Medium   | `T1110.001`      |
+
+
+
+The detections use **KQL** against Windows security telemetry collected in Microsoft Sentinel.
+
+---
+
+# 🧠 Detection & Investigation
+
+The project demonstrates investigation techniques commonly used by a SOC Tier 1 analyst:
+
+* Alert triage
+* Incident investigation
+* Process and command-line analysis
+* Authentication analysis
+* Source and destination IP analysis
+* User and host investigation
+* Windows Security Event analysis
+* KQL-based threat hunting
+* Event correlation
+* MITRE ATT&CK mapping
+* Detection tuning
+* Incident documentation
+
+---
+
+
+# 🤖 SOAR — Automated RDP Brute Force Response
+
+The project includes a **SOAR workflow** built around **Detection Rule 5**.
+
+```text
+RDP Brute Force
+      ↓
+4625 Failed Logons
+      ↓
+4624 Successful Logon
+      ↓
+Sentinel Detection Rule 5
+      ↓
+Microsoft Sentinel Incident
+      ↓
+SOAR Playbook
+      ↓
+Extract IP + Account + Host
+      ↓
+Analyst Approval
+      ↓
+Automated Containment
+      ├── Disable AD Account
+      ├── Block Attacker IP
+      └── Update Incident
+```
+
+The playbook implements a **Human-in-the-Loop** approval step before disruptive containment actions are performed.
+
+### Automated Response
+
+* Disable the compromised Active Directory account
+* Block the attacker IP using Windows Firewall
+* Update the Sentinel incident
+* Document the response
+* Resolve the incident after successful containment
+
+The remediation workflow was validated directly on the target system.
+
+---
+
 
 # 🎯 Project Objectives
 
-The main objectives of this lab are:
-
-* Simulate controlled cyber attacks inside an isolated lab environment
-* Generate security events on a Windows endpoint
-* Detect malicious or suspicious activity using Microsoft Defender for Endpoint
-* Investigate alerts and incidents using Microsoft Defender XDR
-* Analyze security logs using Microsoft Sentinel
-* Use KQL for security investigations
-* Correlate activity between the endpoint, Active Directory, XDR and SIEM
-* Map observed activity to **MITRE ATT&CK**
+* Simulate a realistic multi-stage attack
+* Generate and investigate Windows security telemetry
+* Build custom Microsoft Sentinel detections
+* Investigate endpoint activity using Defender for Endpoint
+* Correlate security events using KQL
+* Map attacks to MITRE ATT&CK
+* Implement automated incident response using SOAR
 * Practice SOC Tier 1 investigation methodology
-* Document findings and investigation procedures
+* Document the complete attack and response lifecycle
 
 ---
 
-
-# 🛡️ Security Stack
-
-## Microsoft Defender for Endpoint — EDR
-
-Microsoft Defender for Endpoint is used as the primary **Endpoint Detection and Response (EDR)** solution.
-
-The investigation will focus on endpoint telemetry such as:
-
-* Process execution
-* Process trees
-* Command lines
-* Users
-* Devices
-* Files
-* Network connections
-* Security alerts
-* Device timeline
-* Detection and response actions
-
----
-
-## Microsoft Defender XDR
-
-Microsoft Defender XDR provides a broader security view and allows investigation and correlation of security signals.
-
-The investigation workflow can include:
+# 📁 Repository Structure
 
 ```text
-Alert
-  │
-  ▼
-Incident
-  │
-  ▼
-Affected Device
-  │
-  ▼
-User
-  │
-  ▼
-Process / File / Network Activity
-  │
-  ▼
-Related Alerts
-  │
-  ▼
-MITRE ATT&CK Mapping
-```
-
----
-
-## Microsoft Sentinel — SIEM
-
-Microsoft Sentinel is used for centralized security monitoring, log analysis, detection, and investigation.
-
-**KQL (Kusto Query Language)** is used to query and investigate relevant security events.
-
-Example workflow:
-
-```text
-Security Logs
-     │
-     ▼
-   KQL Query
-     │
-     ▼
-Suspicious Activity
-     │
-     ▼
-   Correlation
-     │
-     ▼
-Alert / Incident
-     │
-     ▼
- Investigation
-     │
-     ▼
-   Response
-```
-
----
-
-# 🏢 Active Directory
-
-The `ADDC` server acts as the **Active Directory Domain Controller** for the lab environment.
-
-Active Directory provides the lab with realistic enterprise identity and authentication activity.
-
-Relevant investigation areas may include:
-
-* User authentication
-* Failed logons
-* Successful logons
-* Account activity
-* Domain authentication
-* Privileged accounts
-* Group membership
-* Authentication anomalies
-* Suspicious account activity
-
----
-
-# ⚔️ Attack Scenarios
-
-The lab will be gradually expanded with controlled attack scenarios.
-
-Potential scenarios include:
-
-* Brute-force authentication attempts
-* Suspicious PowerShell activity
-* Malicious file execution
-* Network reconnaissance
-* Host discovery
-* Process discovery
-* Account discovery
-* Credential-related activity
-* Persistence simulations
-* Lateral movement simulations
-* Active Directory attacks
-* Suspicious command execution
-* MITRE ATT&CK-based attack simulations
-
-> **All attack activity is performed inside a controlled and isolated lab environment for defensive security research and SOC training.**
-
----
-
-# 🔎 SOC Investigation Workflow
-
-Each scenario will follow a structured SOC investigation process:
-
-```text
-┌─────────────────┐
-│ Attack          │
-│ Simulation      │
-└────────┬────────┘
-         ▼
-┌─────────────────┐
-│ Detection       │
-└────────┬────────┘
-         ▼
-┌─────────────────┐
-│ Alert Triage    │
-└────────┬────────┘
-         ▼
-┌─────────────────┐
-│ Investigation   │
-└────────┬────────┘
-         ▼
-┌─────────────────┐
-│ Log Correlation │
-└────────┬────────┘
-         ▼
-┌─────────────────┐
-│ MITRE ATT&CK    │
-│ Mapping         │
-└────────┬────────┘
-         ▼
-┌─────────────────┐
-│ Response        │
-└────────┬────────┘
-         ▼
-┌─────────────────┐
-│ Documentation   │
-└─────────────────┘
-```
-
----
-
-# 🧪 Investigation Documentation
-
-For each attack scenario, the investigation will document relevant information such as:
-
-* Date and time
-* Source IP
-* Destination IP
-* Hostname
-* Username
-* Alert severity
-* Detection source
-* Process name
-* Parent process
-* Command line
-* File path
-* Network activity
-* Related events
-* MITRE ATT&CK technique
-* Investigation findings
-* Actions taken
-* Final disposition
-
----
-
-# 🗂️ Planned Repository Structure
-
-```text
-SOC-Home-Lab/
+SOC-Microsoft-Defender-Lab/
 │
 ├── README.md
+├── Soar-Playbook.md
 │
-├── Architecture/
-│   └── lab-architecture.png
+├── Analytics-Rules/
+│   ├── 01-analytic-rule-port-scan.md
+│   ├── 02-analytic-rule-discovery.md
+│   ├── 03-analytic-rule-defense-evasion.md
+│   ├── 04-analytic-rule-schedule-task.md
+│   └── 05-analytic-rule-brute-force.md
 │
-├── Attack-Scenarios/
-│   ├── Brute-Force/
-│   ├── PowerShell/
-│   ├── Network-Recon/
-│   ├── Malware-Simulation/
-│   └── Active-Directory/
+├── Attack Chain/
+│   ├── 01-reconnaissance-port-scan.md
+│   ├── 02-rdp-brute-force.md
+│   ├── 03-discovery.md
+│   ├── 04-privilege-escalation.md
+│   ├── 05-persistence-scheduled-task.md
+│   ├── 06-lateral-movement.md
+│   ├── 07-domain-compromise.md
+│   ├── 08-defense-evasion.md
+│   └── 09-data-exfiltration.md
 │
-├── Investigations/
-│   ├── Incident-01/
-│   ├── Incident-02/
-│   └── Incident-03/
-│
-├── KQL/
-│   ├── Authentication/
-│   ├── Endpoint/
-│   ├── Network/
-│   └── Detection-Rules/
-│
-├── MITRE-ATT&CK/
-│   └── Techniques.md
-│
-└── Screenshots/
-    ├── Defender/
-    ├── Sentinel/
-    └── XDR/
+├── images/
+│   ├── analytic-rules/
+│   ├── data-exfiltration/
+│   ├── defense-evasion/
+│   ├── discovery/
+│   ├── domain-compromise/
+│   ├── lateral-movement/
+│   ├── persistence/
+│   ├── privilege-escalation/
+│   ├── rdp-brute-force/
+│   ├── reconnaissance-port-scan/
+│   └── soar-playbook-rdp-brute-force/
+    
 ```
 
 ---
 
-# 📊 Technologies Used
+# 🚀 Final Outcome
 
-| Category          | Technology                      |
-| ----------------- | ------------------------------- |
-| SIEM              | Microsoft Sentinel              |
-| XDR               | Microsoft Defender XDR          |
-| EDR               | Microsoft Defender for Endpoint |
-| Identity          | Active Directory                |
-| Query Language    | KQL                             |
-| Attacker OS       | Kali Linux                      |
-| Endpoint OS       | Windows 10                      |
-| Domain Controller | Windows Server                  |
-| Framework         | MITRE ATT&CK                    |
+The project combines **attack simulation, EDR investigation, SIEM detection engineering, KQL, MITRE ATT&CK, and SOAR-based automated response** in a controlled home lab environment.
 
----
-
-# 🚀 Future Improvements
-
-The lab will be expanded over time to create a more complete enterprise-style SOC environment.
-
-Planned improvements include:
-
-* Additional Windows endpoints
-* Additional Active Directory users and groups
-* More attack scenarios
-* More realistic authentication activity
-* Advanced KQL investigations
-* Custom Sentinel analytics rules
-* Additional MITRE ATT&CK techniques
-* Automated detection and response
-* Advanced incident correlation
-* Additional endpoint telemetry
-* SOC investigation playbooks
-
----
-
-# 📌 Current Lab Goal
-
-The current environment serves as the foundation for a larger SOC laboratory.
-
-The focus is not simply on performing attacks, but on understanding the **defensive investigation process**:
-
-> **Attack → Detect → Triage → Investigate → Correlate → Map → Respond → Document**
-
-This project is intended to demonstrate practical **SOC Tier 1 / Blue Team skills** in a controlled environment.
+> **Lab Scope:** All attack activity was performed in an isolated environment for defensive security research and SOC training.
