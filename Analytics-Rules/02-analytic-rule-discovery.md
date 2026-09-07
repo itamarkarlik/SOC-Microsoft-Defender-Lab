@@ -1,28 +1,32 @@
-
 # 📄 Detection Rule 2: Suspicious Discovery Commands Executed
 
 ## 📌 Overview
 
-- **Rule Name:** Suspicious Discovery Commands Executed
-- **Severity:** Medium
-- **MITRE ATT&CK:** Discovery → System Information Discovery (`T1082`), Account Discovery (`T1087`)
-- **Data Source:** Windows `SecurityEvent` — Event ID `4688`
-- **Target Entities:** `Computer`, `Account`
+* **Rule Name:** Suspicious Discovery Commands Executed
+* **Severity:** Medium
+* **MITRE ATT&CK:** Discovery → System Information Discovery (`T1082`), Account Discovery (`T1087`)
+* **Entities:** Host (`Computer`), Account (`Account`)
 
 ## 📝 Description
 
 This Microsoft Sentinel Analytic Rule detects multiple Windows discovery commands executed rapidly by the same user on the same host.
 
-Monitored commands include:
+It monitors Windows process creation events:
 
-- `whoami.exe`
-- `net.exe`
-- `net1.exe`
-- `ipconfig.exe`
-- `systeminfo.exe`
-- `nltest.exe`
+* **4688** — A new process has been created
 
-The rule triggers when **2 or more distinct discovery tools** are executed within a **5-minute window** by the same account on the same computer.
+The rule monitors the following discovery tools:
+
+* `whoami.exe`
+* `net.exe`
+* `net1.exe`
+* `ipconfig.exe`
+* `systeminfo.exe`
+* `nltest.exe`
+
+The rule triggers when the same account executes **2 or more distinct discovery tools within a 5-minute window** on the same computer.
+
+This detection helps identify rapid system and account discovery activity that may indicate an attacker gathering information about the compromised host or domain environment.
 
 ## 💻 KQL Query
 
@@ -37,36 +41,23 @@ SecurityEvent
     by Account, Computer, bin(TimeGenerated, 5m)
 | where ExecutedCommandsCount >= 2
 | project TimeGenerated, Computer, Account, ExecutedCommandsCount, CommandList
-````
+```
 
-## 🎯 Entity Mapping
+## ⚙️ Detection Tuning
 
-* **Host:** `Computer`
-* **Account:** `Account`
+Potential false positives include legitimate administrative troubleshooting,
+system inventory scripts, and IT support activity.
 
-## ⚙️ Analytic Rule Configuration
+### 📸 Analytic Rule Configuration
 
 ![Suspicious Discovery Commands Analytic Rule Configuration](../images/analytic-rules/02-analytic-rule-discovery-config.png)
 
-## 🔎 Detection Logic
-
-```text
-Event ID 4688
-      ↓
-Discovery Commands
-      ↓
-Same User + Host
-      ↓
-≥ 2 Distinct Tools / 5 Minutes
-      ↓
-Microsoft Sentinel Alert
-      ↓
-SOC Investigation
-```
 
 ## 🚨 Detection Result
 
-The rule successfully detected multiple discovery commands executed on the Domain Controller.
+The rule successfully detected multiple discovery commands executed by `MYLAB\Administrator` on the Domain Controller `DC-01.mylab.local`.
+
+The generated Microsoft Sentinel incident contained:
 
 * **Account:** `MYLAB\Administrator`
 * **Computer:** `DC-01.mylab.local`
@@ -75,19 +66,19 @@ The rule successfully detected multiple discovery commands executed on the Domai
 * **Distinct Commands:** `5`
 * **Severity:** Medium
 
+### 📸 Sentinel Incident
+
 ![Suspicious Discovery Commands Sentinel Incident](../images/analytic-rules/02-analytic-rule-discovery-incident.png)
 
-## 🛡️ MITRE ATT&CK
+## 🛡️ MITRE ATT&CK Mapping
 
 ### T1082 — System Information Discovery
 
-**Tactic:** Discovery
+* **Tactic:** Discovery
+* **Technique:** System Information Discovery
 
 ### T1087 — Account Discovery
 
-**Tactic:** Discovery
+* **Tactic:** Discovery
+* **Technique:** Account Discovery
 
-> **Lab Scope:** Developed and tested in an isolated SOC home lab for defensive security research and SOC Tier 1 training.
-
-```
-```
